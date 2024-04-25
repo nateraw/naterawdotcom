@@ -2,7 +2,6 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/training_musicgen_songstarter.html",
       "/posts/find_a_gpu_modal.html",
       "/posts/multinode_training_accelerate_azureml.html",
       "/posts/sd_music_videos.html"

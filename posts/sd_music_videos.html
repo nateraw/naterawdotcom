@@ -214,7 +214,15 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 
 
 
-<div id="cell-1" class="cell" data-execution_count="10">
+<section id="creating-ai-music-videos-with-stable-diffusion" class="level1">
+<h1>Creating AI Music Videos with Stable Diffusion</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://colab.research.google.com/github/nateraw/naterawdotcom/blob/main/posts/sd_music_videos.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" class="img-fluid figure-img" alt="Open In Colab"></a></p>
+<figcaption>Open In Colab</figcaption>
+</figure>
+</div>
+<div id="cell-2" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>capture</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install diffusers<span class="op">==</span><span class="fl">0.4.0</span> transformers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -272,7 +280,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>As we step through, the % mix of Image A’s noise vector decreases, and % mix of Image B’s noise vector increases.</p>
 <p>We’ll use <a href="https://en.wikipedia.org/wiki/Slerp">Spherical Linear Interpolation</a> to generate vectors in between <code>A</code> and <code>B</code> at weights <code>t</code>, as it seems to work best for these random noise vectors.</p>
 <p>First, let’s define our <code>slerp</code> fn:</p>
-<div id="cell-7" class="cell" data-execution_count="62">
+<div id="cell-8" class="cell" data-execution_count="62">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -302,7 +310,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then create 2 random noise vectors, a and b, and get the vectors between them using our <code>slerp</code> fn over <code>T</code> timesteps.</p>
-<div id="cell-9" class="cell" data-outputid="09837da0-d82c-4d9b-8f35-05fd4e38ee83" data-execution_count="63">
+<div id="cell-10" class="cell" data-outputid="09837da0-d82c-4d9b-8f35-05fd4e38ee83" data-execution_count="63">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we construct noise vectors with shapesimilar to Stable Diffusion's</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">512</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">512</span></span>
@@ -318,7 +326,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <pre><code>tensor([0.0000, 0.2000, 0.4000, 0.6000, 0.8000, 1.0000])</code></pre>
 </div>
 </div>
-<div id="cell-10" class="cell" data-outputid="c2c8d697-e85b-4149-e0b0-9f52e2486de0" data-execution_count="64">
+<div id="cell-11" class="cell" data-outputid="c2c8d697-e85b-4149-e0b0-9f52e2486de0" data-execution_count="64">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> T:</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    noise_t <span class="op">=</span> slerp(<span class="bu">float</span>(t), noise_a, noise_b)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Later, we'll do something like this at each timestep...</span></span>
@@ -331,7 +339,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>We have a small problem here - <code>torch.randn</code> is drawing random samples every time. To fix this, we can enforce reproducibility by using a <a href="https://pytorch.org/docs/stable/generated/torch.Generator.html">torch generator</a> and supplying an <code>int</code> seed.</p>
 <p>An important thing to note here is we have to generate these noise vectors on the correct device.</p>
-<div id="cell-12" class="cell" data-execution_count="65">
+<div id="cell-13" class="cell" data-execution_count="65">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we construct noise vectors with shapesimilar to Stable Diffusion's</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">512</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">512</span></span>
@@ -363,7 +371,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>We’ll use Hugging Face’s <a href="https://github.com/huggingface/diffusers"><code>diffusers</code></a> to download and interface with Stable Diffusion. As of the time of writing this post, we’re using the <a href="https://huggingface.co/CompVis/stable-diffusion-v1-4">Stable Diffusion 1.4 checkpoint</a> and <code>diffusers==0.4.0</code>.</p>
 <p>In that codebase, there’s a <code>StableDiffusionPipeline</code>, which is a handy wrapper for inference.</p>
 <p>Before we load up the pipeline, we have to make sure we’re authenticated with the Hugging Face Hub…</p>
-<div id="cell-15" class="cell" data-outputid="eaa97537-22a9-446a-95e3-2547dce9ae4b" data-execution_count="66">
+<div id="cell-16" class="cell" data-outputid="eaa97537-22a9-446a-95e3-2547dce9ae4b" data-execution_count="66">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> huggingface_hub <span class="im">import</span> notebook_login</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>notebook_login()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -374,7 +382,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 </div>
 <p>Now let’s load the <code>StableDiffusionPipeline</code>…</p>
-<div id="cell-17" class="cell" data-outputid="2269ce78-8d31-4ffa-941d-7e8655b21225">
+<div id="cell-18" class="cell" data-outputid="2269ce78-8d31-4ffa-941d-7e8655b21225">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> StableDiffusionPipeline</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -384,7 +392,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>).to(<span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>To generate images with this, we can pass a prompt and watch it go!</p>
-<div id="cell-19" class="cell" data-outputid="9f16137b-7fdf-4f22-a117-cdaff02a4d68">
+<div id="cell-20" class="cell" data-outputid="9f16137b-7fdf-4f22-a117-cdaff02a4d68">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pipeline(<span class="st">'blueberry spaghetti'</span>)[<span class="st">'sample'</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
@@ -400,7 +408,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 </div>
 <p>We can provide a noise vector of our own using the <code>latents</code> kwarg</p>
-<div id="cell-21" class="cell" data-outputid="0d7c340f-0c12-421d-a4db-dafcd2552b96">
+<div id="cell-22" class="cell" data-outputid="0d7c340f-0c12-421d-a4db-dafcd2552b96">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> pipeline(<span class="st">'blueberry spaghetti'</span>, latents<span class="op">=</span>noise_a)[<span class="st">'sample'</span>][<span class="dv">0</span>]</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>im</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -417,7 +425,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 </div>
 <p>If we run that again with the same noise, we’ll get the same image back.</p>
-<div id="cell-23" class="cell" data-outputid="6a572a57-0b83-42a7-a58e-2e07d2dcb448">
+<div id="cell-24" class="cell" data-outputid="6a572a57-0b83-42a7-a58e-2e07d2dcb448">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> pipeline(<span class="st">'blueberry spaghetti'</span>, latents<span class="op">=</span>noise_a)[<span class="st">'sample'</span>][<span class="dv">0</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>im</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -434,7 +442,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 </div>
 <p>If we change our noise to <code>noise_b</code>, we’ll get a different image</p>
-<div id="cell-25" class="cell" data-outputid="5c62a1c1-c3d8-40ea-9bab-e8a822ac34ca">
+<div id="cell-26" class="cell" data-outputid="5c62a1c1-c3d8-40ea-9bab-e8a822ac34ca">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> pipeline(<span class="st">'blueberry spaghetti'</span>, latents<span class="op">=</span>noise_b)[<span class="st">'sample'</span>][<span class="dv">0</span>]</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>im</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -454,7 +462,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <section id="interpolating-between-noise-vectors" class="level2">
 <h2 class="anchored" data-anchor-id="interpolating-between-noise-vectors">Interpolating Between Noise Vectors</h2>
 <p>Now let’s interpolate between images A and B as we described earlier…</p>
-<div id="cell-27" class="cell" data-execution_count="22">
+<div id="cell-28" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="dv">512</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="dv">512</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>noise_shape <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">4</span>, height <span class="op">//</span> <span class="dv">8</span>, width <span class="op">//</span> <span class="dv">8</span>)</span>
@@ -477,7 +485,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    device<span class="op">=</span>pipeline.device</span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-28" class="cell" data-outputid="dfc6a7ab-024f-4c20-ab4b-86bf1f1ff555">
+<div id="cell-29" class="cell" data-outputid="dfc6a7ab-024f-4c20-ab4b-86bf1f1ff555">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using same prompt for each image</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">'blueberry spaghetti'</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -495,7 +503,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    images.append(im)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s visualize the frames we just created…</p>
-<div id="cell-30" class="cell" data-outputid="40717ea1-1066-4682-9538-11ce3d00f719" data-execution_count="34">
+<div id="cell-31" class="cell" data-outputid="40717ea1-1066-4682-9538-11ce3d00f719" data-execution_count="34">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -522,7 +530,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Cool! Looks like we got an image in between A and B that seems to makes sense. Let’s do more steps and see what that looks like…</p>
 <p>This time, we’ll save images as we go, and then stitch them back together as a gif with <code>ffmpeg</code>.</p>
-<div id="cell-32" class="cell" data-outputid="e1aeeed1-975a-4f0e-eaf0-522c0f63772f">
+<div id="cell-33" class="cell" data-outputid="e1aeeed1-975a-4f0e-eaf0-522c0f63772f">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">'images'</span>)</span>
@@ -543,7 +551,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Using ffmpeg, we can bring these together as a clip.</p>
 <p>Here, we’ll lower the frame rate to 5 frames per second, so we should end up with a 2 second clip containing our 10 generating image frames.</p>
-<div id="cell-34" class="cell" data-outputid="dbea4914-776c-47ca-ef70-c2ce2db2d417">
+<div id="cell-35" class="cell" data-outputid="dbea4914-776c-47ca-ef70-c2ce2db2d417">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ffmpeg <span class="op">-</span>f image2 <span class="op">-</span>framerate <span class="dv">5</span> <span class="op">-</span>i images<span class="op">/</span>frame<span class="op">%</span><span class="dv">0</span><span class="er">6d</span>.png <span class="op">-</span>loop <span class="dv">0</span> output_1.gif</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>It should look like this - pretty cool!</p>
@@ -586,7 +594,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
 <span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>        batch_size <span class="op">=</span> text_embeddings.shape[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Here’s the full code for our <code>StableDiffusionWalkPipeline</code>:</p>
-<div id="cell-39" class="cell" data-execution_count="37">
+<div id="cell-40" class="cell" data-execution_count="37">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> inspect</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Optional, Union, List, Callable</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -748,12 +756,12 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> StableDiffusionPipelineOutput(images<span class="op">=</span>image, nsfw_content_detected<span class="op">=</span>has_nsfw_concept)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Remove existing pipeline instance before proceeding…</p>
-<div id="cell-41" class="cell" data-execution_count="38">
+<div id="cell-42" class="cell" data-execution_count="38">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> pipeline</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>torch.cuda.empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then, initialize the pipeline just as we did before</p>
-<div id="cell-43" class="cell" data-outputid="863dbdb2-d294-465f-9c7d-3ae9c15f8c24">
+<div id="cell-44" class="cell" data-outputid="863dbdb2-d294-465f-9c7d-3ae9c15f8c24">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> StableDiffusionWalkPipeline.from_pretrained(</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"CompVis/stable-diffusion-v1-4"</span>,</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    revision<span class="op">=</span><span class="st">'fp16'</span></span>
@@ -761,7 +769,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Great! Now we’ll interpolate between text embeddings. We use <code>torch.lerp</code> instead of <code>slerp</code>, as that’s what we’ve found to be a bit smoother for text.</p>
 <p>We’ll start by creating two helper functions, <code>embed_text</code> and <code>get_noise</code> so this repetitive code doesn’t muddy up our logic below.</p>
-<div id="cell-45" class="cell" data-execution_count="40">
+<div id="cell-46" class="cell" data-execution_count="40">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> embed_text(pipeline, text):</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""takes in text and turns it into text embeddings"""</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    text_input <span class="op">=</span> pipeline.tokenizer(</span>
@@ -785,7 +793,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        device<span class="op">=</span>pipeline.device,</span>
 <span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-46" class="cell" data-execution_count="48">
+<div id="cell-47" class="cell" data-execution_count="48">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Height and width of image are important for noise vector creation</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Values should be divisible by 8 if less than 512</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Values should be divisible by 64 if greater than 512</span></span>
@@ -803,7 +811,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>embed_a <span class="op">=</span> embed_text(pipeline, prompt_a)</span>
 <span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>embed_b <span class="op">=</span> embed_text(pipeline, prompt_b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-47" class="cell" data-outputid="f7e08276-5d25-47dc-b409-94adee8471fe">
+<div id="cell-48" class="cell" data-outputid="f7e08276-5d25-47dc-b409-94adee8471fe">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">'images_walk_with_text'</span>)</span>
@@ -825,7 +833,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    )[<span class="st">'sample'</span>][<span class="dv">0</span>]</span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    im.save(output_dir <span class="op">/</span> <span class="ss">f'frame</span><span class="sc">{</span>i<span class="sc">:06d}</span><span class="ss">.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-48" class="cell" data-outputid="7111f430-34df-41d1-e488-5af010e50a0b">
+<div id="cell-49" class="cell" data-outputid="7111f430-34df-41d1-e488-5af010e50a0b">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ffmpeg <span class="op">-</span>f image2 <span class="op">-</span>framerate <span class="dv">5</span> <span class="op">-</span>i images_walk_with_text<span class="op">/</span>frame<span class="op">%</span><span class="dv">0</span><span class="er">6d</span>.png <span class="op">-</span>loop <span class="dv">0</span> output_2.gif</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="quarto-figure quarto-figure-center">
@@ -845,7 +853,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </ul>
 <p>We can achieve this by manipulating the weights at certain timesteps that we defined above as <code>T</code>. Instead of using <code>torch.linspace</code>, we’ll try to set these values based on some audio.</p>
 <p>Here we define a helper function to visualize numpy arrays. We’ll use this to help explain what we’re doing.</p>
-<div id="cell-52" class="cell" data-execution_count="50">
+<div id="cell-53" class="cell" data-execution_count="50">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -866,7 +874,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>Now let’s load in an audio clip. The one we’re using is the <code>choice</code> example clip from <code>librosa</code>.</p>
 <p>It’s a good one because it has drums and bass in it, so it’s similar to a song you might want to use (but doesn’t involve us using copyrighted music in this notebook 😉).</p>
 <p>We’ll slice the audio clip so we are only using audio from 0:11-0:14 in the audio.</p>
-<div id="cell-54" class="cell" data-outputid="e29d0b7f-478b-4821-b940-aec6d032af40" data-execution_count="52">
+<div id="cell-55" class="cell" data-outputid="e29d0b7f-478b-4821-b940-aec6d032af40" data-execution_count="52">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> librosa</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Audio</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -887,7 +895,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 </div>
 <p>Let’s take a look at the plot of the waveform:</p>
-<div id="cell-56" class="cell" data-outputid="1a076726-efd6-4d48-fc64-8e9e429cc8e2" data-execution_count="68">
+<div id="cell-57" class="cell" data-outputid="1a076726-efd6-4d48-fc64-8e9e429cc8e2" data-execution_count="68">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>plot_array(wav)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -899,7 +907,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>After much experimentation, I found that extracting the percussive elements from the song and using those for everything moving forward leads to the best results.</p>
 <p>We’ll do this using the <code>librosa.effects.hpss</code> function.</p>
-<div id="cell-58" class="cell" data-outputid="b4447571-8a53-449c-a5fa-4f695af72250" data-execution_count="69">
+<div id="cell-59" class="cell" data-outputid="b4447571-8a53-449c-a5fa-4f695af72250" data-execution_count="69">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>wav_harmonic, wav_percussive <span class="op">=</span> librosa.effects.hpss(wav, margin<span class="op">=</span>(<span class="fl">1.0</span>, <span class="fl">5.0</span>))</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>plot_array(wav_percussive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -918,7 +926,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <li>Rescale the spectrogram to be <code>(duration * fps)</code> so we have a vector that’s the same length as the amount of frames we wish to generate.</li>
 <li>Plot the resulting array so we can see what it looks like</li>
 </ul>
-<div id="cell-60" class="cell" data-outputid="fc3a54ba-162b-4ee2-d6a6-a19588c92b36" data-execution_count="70">
+<div id="cell-61" class="cell" data-outputid="fc3a54ba-162b-4ee2-d6a6-a19588c92b36" data-execution_count="70">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of audio samples per frame</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>frame_duration <span class="op">=</span> <span class="bu">int</span>(sr <span class="op">/</span> fps)</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -946,7 +954,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Finally, we’ll construct <code>T</code>. We could do this in a variety of ways, but the simplest we found was using <code>np.cumsum</code> to gather a cumulative sum of the “energy” in the audio array.</p>
 <p>Hat tip to <a href="https://github.com/teddykoker"><span class="citation" data-cites="teddykoker">@teddykoker</span></a> who helped me figure this out.</p>
-<div id="cell-62" class="cell" data-outputid="aed9aab0-fa2d-4c72-c5e5-425a8cbe2d9d" data-execution_count="71">
+<div id="cell-63" class="cell" data-outputid="aed9aab0-fa2d-4c72-c5e5-425a8cbe2d9d" data-execution_count="71">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cumulative sum of audio energy</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> np.cumsum(amplitude_arr)</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -967,7 +975,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Compare the above <code>T</code> with our previous definition of <code>T</code>…it’s a lot different!</p>
 <p>We can see the one above is increasing rapidly at points of high energy, while the one below is simply linear.</p>
-<div id="cell-64" class="cell" data-outputid="40b85cd0-2536-4054-d344-f6fbb99ce98d" data-execution_count="72">
+<div id="cell-65" class="cell" data-outputid="40b85cd0-2536-4054-d344-f6fbb99ce98d" data-execution_count="72">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plot_array(np.linspace(<span class="fl">0.0</span>, <span class="fl">1.0</span>, fps<span class="op">*</span>duration))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -979,7 +987,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Let’s use our newly defined <code>T</code> to generate our music video!</p>
 <p>📝 <strong>Note</strong> - This cell will take a little while as it has to do the number of steps you see in X-axis above (36 frames)</p>
-<div id="cell-66" class="cell" data-outputid="1dfcbf6a-cedb-4b5c-e712-cf645d4957d7">
+<div id="cell-67" class="cell" data-outputid="1dfcbf6a-cedb-4b5c-e712-cf645d4957d7">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">'images_walk_with_audio'</span>)</span>
@@ -998,13 +1006,13 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </div>
 <p>Let’s stitch together the frames we just made as well as the audio clip that goes with it.</p>
 <p>First, we’ll write that audio clip to a new file, <code>audio.wav</code>.</p>
-<div id="cell-68" class="cell" data-execution_count="59">
+<div id="cell-69" class="cell" data-execution_count="59">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> soundfile <span class="im">as</span> sf</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>sf.write(output_dir <span class="op">/</span> <span class="st">'audio.wav'</span>, wav, samplerate<span class="op">=</span>sr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then, we’ll use some <code>ffmpeg</code> witchcraft to stitch the frames together into an mp4, including the audio clip we just wrote.</p>
-<div id="cell-70" class="cell">
+<div id="cell-71" class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> ffmpeg <span class="op">\</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>r {fps} <span class="op">\</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>i images_walk_with_audio<span class="op">/</span>frame<span class="op">%</span><span class="dv">0</span><span class="er">6d</span>.png <span class="op">\</span></span>
@@ -1018,7 +1026,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  output_walk_with_audio.mp4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s take a look at the video we just made. In Colab, you’ll have to run some code like this. Otherwise, you can just download the file and open it on your computer.</p>
-<div id="cell-72" class="cell" data-outputid="1d2fcdef-b695-4bca-d076-40155e5e371d" data-execution_count="61">
+<div id="cell-73" class="cell" data-outputid="1d2fcdef-b695-4bca-d076-40155e5e371d" data-execution_count="61">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> HTML</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> base64 <span class="im">import</span> b64encode</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1067,6 +1075,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>Thanks for reading! Cheers 🍻</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

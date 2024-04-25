@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.nateraw.com/index.html</loc>
+    <lastmod>2024-04-25T05:17:52.055Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.nateraw.com/posts/training_musicgen_songstarter.html</loc>
+    <lastmod>2024-04-25T05:17:50.822Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.nateraw.com/posts/sd_music_videos.html</loc>
+    <lastmod>2024-04-25T05:17:49.209Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.nateraw.com/posts/find_a_gpu_modal.html</loc>
+    <lastmod>2024-04-25T05:17:50.065Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.nateraw.com/posts/multinode_training_accelerate_azureml.html</loc>
+    <lastmod>2024-04-25T05:17:51.546Z</lastmod>
+  </url>
+</urlset>

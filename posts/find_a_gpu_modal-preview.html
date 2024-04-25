@@ -1,65 +1,153 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="generator" content="quarto-1.4.553">
 
-<meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="author" content="Nate Raw">
+    <meta name="dcterms.date" content="2023-07-24">
+    <meta name="description" content="Quick guide on setting up an app on Modal that’ll text you when instances become available on Lambda Labs Cloud.">
 
-<meta name="author" content="Nate Raw">
-<meta name="dcterms.date" content="2023-07-24">
-<meta name="description" content="Quick guide on setting up an app on Modal that’ll text you when instances become available on Lambda Labs Cloud.">
+    <title>nateraw.com - Text Yourself When GPUs Are Available</title>
+    <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      div.columns{display: flex; gap: min(4vw, 1.5em);}
+      div.column{flex: auto; overflow-x: auto;}
+      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+      ul.task-list{list-style: none;}
+      ul.task-list li input[type="checkbox"] {
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+        vertical-align: middle;
+      }
+      /* CSS for syntax highlighting */
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+        }
+      pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+    </style>
 
-<title>nateraw.com - Text Yourself When GPUs Are Available</title>
-<style>
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-ul.task-list li input[type="checkbox"] {
-  width: 0.8em;
-  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
-  vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-</style>
+    <style>
+      body.hypothesis-enabled #quarto-embed-header {
+        padding-right: 36px;
+      }
 
+      #quarto-embed-header {
+        height: 3em;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px;
+      }
 
+      #quarto-embed-header h6 {
+        font-size: 1.1em;
+        padding-top: 0.6em;
+        margin-left: 1em;
+        margin-right: 1em;
+        font-weight: 400;
+      }
+
+      #quarto-embed-header a.quarto-back-link,
+      #quarto-embed-header a.quarto-download-embed {
+        font-size: 0.8em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
+      }
+
+      .quarto-back-container {
+        padding-left: 0.5em;
+        display: flex;
+      }
+
+      .headroom {
+          will-change: transform;
+          transition: transform 200ms linear;
+      }
+
+      .headroom--pinned {
+          transform: translateY(0%);
+      }
+
+      .headroom--unpinned {
+          transform: translateY(-100%);
+      }      
+    </style>
+
+    <script>
+    window.document.addEventListener("DOMContentLoaded", function () {
+
+      var header = window.document.querySelector("#quarto-embed-header");
+      const titleBannerEl = window.document.querySelector("body > #title-block-header");
+      if (titleBannerEl) {
+        titleBannerEl.style.paddingTop = header.clientHeight + "px";
+      }
+      const contentEl = window.document.getElementById('quarto-content');
+      for (const child of contentEl.children) {
+        child.style.paddingTop = header.clientHeight + "px";
+        child.style.marginTop = "1em";
+      }
+
+      // Use the article root if the `back` call doesn't work. This isn't perfect
+      // but should typically work
+      window.quartoBackToArticle = () => {
+        var currentUrl = window.location.href;
+        window.history.back();
+        setTimeout(() => {
+            // if location was not changed in 100 ms, then there is no history back
+            if(currentUrl === window.location.href){              
+                // redirect to site root
+                window.location.href = '/';
+            }
+        }, 100);
+      }
+
+      const headroom = new window.Headroom(header, {
+        tolerance: 5,
+        onPin: function () {
+        },
+        onUnpin: function () {
+        },
+      });
+      headroom.init();
+    });
+    </script>
+
+    
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
@@ -77,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+     <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -103,8 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-QQ37HV1W85"></script>
+}</script>  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-QQ37HV1W85"></script>
 
 <script type="text/javascript">
 
@@ -112,18 +199,23 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
-</script>
-
-
-<meta name="twitter:title" content="nateraw.com - Text Yourself When GPUs Are Available">
+</script>  
+      <meta name="twitter:title" content="nateraw.com - Text Yourself When GPUs Are Available">
 <meta name="twitter:description" content="Quick guide on setting up an app on Modal that’ll text you when instances become available on Lambda Labs Cloud.">
 <meta name="twitter:image" content="https://www.nateraw.com/static/find_a_gpu_modal/thumbnail.jpg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed">
+  <body class="floating nav-fixed quarto-notebook">
+    <div id="quarto-embed-header" class="headroom fixed-top bg-primary">
+      
+      <a onclick="window.quartoBackToArticle(); return false;" class="btn btn-primary quarto-back-link"><i class="bi bi-caret-left"></i> Back to Article</a>
+      <h6><i class="bi bi-journal-code"></i> Find a gpu on modal</h6>
 
-<div id="quarto-search-results"></div>
+            <a href="../posts/find_a_gpu_modal.ipynb" class="btn btn-primary quarto-download-embed" download="find_a_gpu_modal.ipynb">Download Notebook</a>
+          </div>
+
+     <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
@@ -161,9 +253,9 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
+    <div class="quarto-title column-page-right">
       <h1 class="title">Text Yourself When GPUs Are Available</h1>
                   <div>
         <div class="description">
@@ -180,7 +272,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta column-page-right">
 
       <div>
       <div class="quarto-title-meta-heading">Author</div>
@@ -202,17 +294,22 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-code" id="toc-the-code" class="nav-link active" data-scroll-target="#the-code">The Code</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="find_a_gpu_modal.out.ipynb" download="find_a_gpu_modal.out.ipynb"><i class="bi bi-journal-code"></i>Jupyter</a></li></ul></div></div>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
-
-
-
-
-
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">      
+     <div id="cell-1" class="cell markdown">
 <p>GPUs - so hot right now! It’s getting to the point where all available GPU instances are unavailable, which is a bummer if you’re trying to train a model.</p>
 <p>As of writing this, Lambda Cloud is my favorite cloud GPU provider. They have great instances, an easy to use UI, and the best prices. The only downside is that they’re often sold out. So, let’s see what we can do about that.</p>
 <section id="the-plan" class="level2">
@@ -220,13 +317,18 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>To make things easier, I put together a small Python library called <a href="https://github.com/nateraw/lambdacloud">lambdacloud</a> that makes it easy to interface with the Lambda Cloud API. We’ll use this to check for available instances and spin them up.</p>
 <p>We’ll also use <a href="https://twilio.com">Twilio</a> to send text messages. You’ll need a Twilio account and a phone number that can send SMS messages.</p>
 <p>To avoid having to run this script all the time from your local machine, we’ll use <a href="https://modal.com">Modal</a> to run the script on a schedule. Modal is a cloud orchestration platform that makes it easy to run code on cloud machines. Using it for this use case shouldn’t cost more than a few cents, but you can just follow along with the code and run it locally if you prefer.</p>
-<div id="cell-2" class="cell">
+</section>
+</div>
+<div class="cell-container"><div class="cell-decorator"><pre>In [2]:</pre></div><div id="cell-2" class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> pip install lambdacloud twilio modal<span class="op">-</span>client</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<a class="quarto-notebook-link" id="nblink-1" href="find_a_gpu_modal-preview.html#cell-2">Source: Find a gpu on modal</a></div>
+</div></div>
+<div id="cell-3" class="cell markdown">
 <p>You’ll need to authenticate with Modal if you haven’t already…</p>
-<div id="cell-4" class="cell">
+</div>
+<div class="cell-container"><div class="cell-decorator"><pre>In [4]:</pre></div><div id="cell-4" class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> modal token new</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<a class="quarto-notebook-link" id="nblink-2" href="find_a_gpu_modal-preview.html#cell-4">Source: Find a gpu on modal</a></div>
+</div></div>
+<div id="cell-5" class="cell markdown">
 <p>To authenticate with Lambda’s API, you’ll need an API key, which you can generate <a href="https://cloud.lambdalabs.com/api-keys">here</a> when you’re logged in.</p>
 <p>Additionally, you’ll need Twilio’s account identifier, auth token, and phone number, which you can find <a href="https://www.twilio.com/console">here</a>. The phone number will be the one you’ll receive texts from, and it should be fairly easy to figure out how to set that up if you haven’t already.</p>
 <p>Now that we have all our credentials, we’ll log into Modal and create a collection of secrets. See the docs on this feature <a href="https://modal.com/docs/guide/secrets">here</a>.</p>
@@ -237,11 +339,14 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <figcaption>Modal Secrets</figcaption>
 </figure>
 </div>
-</section>
+</div>
+<div id="cell-6" class="cell markdown">
 <section id="the-code" class="level2">
 <h2 class="anchored" data-anchor-id="the-code">The Code</h2>
 <p>Everything’s ready, we just have to write a small script now 🚀. Here it is:</p>
-<div id="cell-7" class="cell">
+</section>
+</div>
+<div class="cell-container"><div class="cell-decorator"><pre>In [7]:</pre></div><div id="cell-7" class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> modal</span>
@@ -288,7 +393,8 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
 <span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    modal.runner.deploy_stub(stub, name<span class="op">=</span><span class="st">"lambda-watcher"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<a class="quarto-notebook-link" id="nblink-3" href="find_a_gpu_modal-preview.html#cell-7">Source: Find a gpu on modal</a></div>
+</div></div>
+<div id="cell-8" class="cell markdown">
 <p>If all went well, you should get a text message when an instance becomes available. You can also check the logs in Modal to see what’s going on. In the UI, you should see something like this for the deployment:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -296,13 +402,13 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <figcaption>Modal Logs</figcaption>
 </figure>
 </div>
+</div>
+<div id="cell-9" class="cell markdown">
 <p>That’s it! Now you can text yourself when GPUs are available. It’s fairly easy to extend this script to spin up instances that are available, just use the <code>lambdacloud.create_instance</code> function. I’ll leave that to you as homework 😎.</p>
+</div>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+     </main> <!-- /main -->  <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -710,10 +816,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
-</div> <!-- /content -->
-
-
-
-
+</script>  </div> <!-- /content --> 
+  
 </body></html>

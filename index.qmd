@@ -5,13 +5,8 @@ title-block-banner: false
 listing:
   sort: "date desc"
   contents: posts
-# listing:
-#  sort: "date desc"
-#  contents: posts
-# type: grid
-#  grid-columns: 2
-#  grid-item-align: center
-# image-height: 320px
+  exclude:
+    title: "Why and*"
 ---
 
 Hi, I'm Nate Raw. 👋

@@ -23,40 +23,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -212,7 +178,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 
 
 <p>This post will bring you through my motivations and process for training MusicGen Songstarter, a fine-tuned MusicGen model that produces useful samples for music producers.</p>
-<p>This is not a research paper. However, much like a research paper, there is a bit of a long winded background below here to give you some context. Skip to the next section if you want to get straight to the point.</p>
+<p>This is not a research paper. However, much like a research paper, there is a bit of a long winded background below here to give you some context. Skip to <a href="#the-plan">the plan</a> if you want to get straight to the technical details.</p>
 <section id="my-background-in-music" class="level2">
 <h2 class="anchored" data-anchor-id="my-background-in-music">My Background in Music</h2>
 <p>Before I got into programming, I used to spend my free time producing music. I spent countless hours in middle school downloading various software onto the family computer and infecting it with viruses (sorry Mom!). Nobody I knew at school was into that sort of thing, so I had to go online to find folks like me who were tinkering with music production. Once I found a few friends via [what I imagine were] Soundcloud DMs, we formed a Facebook group to chat, collaborate, share our music, and ask technical questions.</p>
@@ -270,16 +236,13 @@ Your browser does not support the audio element. </audio>
 </td>
 </tr>
 </tbody></table>
-<div id="cell-5" class="cell" data-vscode="{&quot;languageId&quot;:&quot;plaintext&quot;}">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Aha moment 💡</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>These results felt promising to me<span class="op">!</span> So, I went over to Monte Booker<span class="st">'s discord and shared the results, asking for feedback. Immediately, folks started taking the samples I shared and remixing the tracks I sent - chopping them up, adding better drums, etc.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="er">This made something click for me...why not make the outputs even more usable for producers? Instead of generating full tracks like I was doing, why not generate loops like you'd buy from [Splice](https://splice.com)? This way, I'm not making an "AI version of the artist", but rather creating a tool that music producers can use creatively. If done correctly, I'd get rid of most of the ethical concerns I was having while also building a more unique project.</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>This would be like the new age of sampling<span class="op">!</span> 🤯</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
+</section>
+<section id="aha-moment" class="level2">
+<h2 class="anchored" data-anchor-id="aha-moment">Aha moment 💡</h2>
+<p>These results felt promising to me! So, I went over to Monte Booker’s discord and shared the results, asking for feedback. Immediately, folks started taking the samples I shared and remixing the tracks I sent - chopping them up, adding better drums, etc.</p>
+<p>This made something click for me…why not make the outputs even more usable for producers? Instead of generating full tracks like I was doing, why not generate loops like you’d buy from <a href="https://splice.com">Splice</a>? This way, I’m not making an “AI version of the artist”, but rather creating a tool that music producers can use creatively. If done correctly, I’d get rid of most of the ethical concerns I was having while also building a more unique project.</p>
+<p>This would be like the new age of sampling! 🤯</p>
 </section>
 <section id="the-plan" class="level2">
 <h2 class="anchored" data-anchor-id="the-plan">The plan</h2>

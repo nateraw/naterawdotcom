@@ -1,0 +1,42 @@
+project:
+  type: website
+  output-dir: "docs"
+
+website:
+  title: "nateraw.com"
+  twitter-card: true
+  favicon: favicon.ico
+  site-url: "https://www.nateraw.com"
+  navbar:
+    # left:
+    #   - 
+    #     href: ./blog.qmd
+    right:
+      - icon: github
+        href: https://github.com/nateraw/
+      - icon: twitter
+        href: https://twitter.com/_nateraw
+      - icon: linkedin
+        href: https://www.linkedin.com/in/Nathan-Raw/
+  google-analytics: G-QQ37HV1W85
+
+  # sidebar:
+  #   style: "docked"
+  #   search: true
+  #   # make dirs holding ipynbs not show
+  #   # contents: posts/**/*.ipynb
+  #   contents: posts/
+  #   page-navigation: true
+
+
+ipynb-filters:
+  - filter.py
+format:
+  html:
+    theme: lux
+    page-layout: full
+    # extract-media: "true"
+    # css: styles.css
+
+execute:
+  freeze: auto

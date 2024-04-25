@@ -1,0 +1,24 @@
+---
+title: ""
+page-layout: full
+title-block-banner: false
+listing:
+  sort: "date desc"
+  contents: posts
+# listing:
+#  sort: "date desc"
+#  contents: posts
+# type: grid
+#  grid-columns: 2
+#  grid-item-align: center
+# image-height: 320px
+---
+
+Hi, I'm Nate Raw. 👋
+
+I'm a machine learning hacker passionate about building cool products with technology.
+
+Feel free to reach out to me on [Twitter](https://twitter.com/_nateraw) or [LinkedIn](https://www.linkedin.com/in/Nathan-Raw/) if you'd like to chat about anything or want to share an opportunity!
+
+
+## Recent Posts

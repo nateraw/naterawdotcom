@@ -377,8 +377,33 @@ Your browser does not support the audio element. </audio>
 <blockquote class="blockquote">
 <p>💡 <strong><strong>Fun fact</strong></strong> - did you know that Michael Jackson used to sing his melodies into a tape recorder for his producers? Here’s his <a href="https://www.youtube.com/watch?v=eZeYw1bm53Y">demo tape for Beat It</a>. Imagine if Michael could have produced his own tracks using just his voice! 🤯</p>
 </blockquote>
-<p>Now, unless you’ve got a voice like Michael’s, you likely don’t sing with perfect pitch. We reintroduce the problem that stem separation tried to solve. If your vocals are off pitch, or have fast vibrato, the model will have a hard time finding a stable signal to condition against. To try and mitigate that, you can run pitch correction on your vocals before feeding them through to the patched model. I used some modified code from this AWESOME <a href="https://t.co/Kpi023sDP6">blogpost</a> by <a href="https://twitter.com/wilczek_jan"><span class="citation" data-cites="wilczek_jan">@wilczek_jan</span></a> to do this, and packaged it up into a Gradio app to play with interactively.</p>
-<p>Have a listen to the results:</p>
+<p>Now, unless you’ve got a voice like Michael’s, you likely don’t sing with perfect pitch. We reintroduce the problem that stem separation tried to solve. If your vocals are off pitch, or have fast vibrato, the model will have a hard time finding a stable signal to condition against. To try and mitigate that, you can run pitch correction on your vocals before feeding them through to the patched model. I used some modified code from this AWESOME <a href="https://t.co/Kpi023sDP6">blogpost</a> by <a href="https://twitter.com/wilczek_jan"><span class="citation" data-cites="wilczek_jan">@wilczek_jan</span></a> to do this.</p>
+<p>Here, you can listen to the difference between my original and pitch corrected vocals.</p>
+<table style="width:100%; text-align:center;">
+<tbody><tr>
+<th>
+Original
+</th>
+<th>
+Pitch Corrected
+</th>
+</tr>
+<tr>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/nate_is_singing_Gb_minor.wav" type="audio/wav">
+Your browser does not support the audio element. </audio>
+</td>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/nate_is_singing_Gb_minor_pitch_corrected.wav" type="audio/wav">
+Your browser does not support the audio element. </audio>
+</td>
+</tr>
+</tbody></table>
+<p>To make it even more clear, here’s a visualization of the original and pitch corrected vocals. Notice how the original is sort of wavey, while the pitch corrected is more stable. This is critical for the model to be able to successfully reproduce the melody.</p>
+<p><img style="width:50%; text-align:center;" src="../static/training_musicgen_songstarter/nate_is_singing_spec.jpg" alt="Spectrogram of Nate's Singing"></p>
+<p>When you put everything together, the results sound like this:</p>
 <video width="850" height="450" controls="">
 <source src="../static/training_musicgen_songstarter/singing_songstarter_v2.mp4" type="video/mp4">
 Your browser does not support the video tag.

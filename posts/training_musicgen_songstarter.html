@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.4.554">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nate Raw">
 <meta name="dcterms.date" content="2024-04-24">
-<meta name="description" content="Explaining the motivation and process behind training MusicGen Songstarter, a model that generates useful song ideas for music producers.">
+<meta name="description" content="Explaining the motivation and process behind training musicgen-songstarter-v0.2, a model that generates useful song ideas for music producers.">
 
 <title>nateraw.com - Why and How I trained MusicGen Songstarter</title>
 <style>
@@ -82,7 +82,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 
 
 <meta name="twitter:title" content="nateraw.com - Why and How I trained MusicGen Songstarter">
-<meta name="twitter:description" content="Explaining the motivation and process behind training MusicGen Songstarter, a model that generates useful song ideas for music producers.">
+<meta name="twitter:description" content="Explaining the motivation and process behind training musicgen-songstarter-v0.2, a model that generates useful song ideas for music producers.">
 <meta name="twitter:image" content="https://www.nateraw.com/static/training_musicgen_songstarter/thumbnail.jpg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -133,7 +133,7 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
       <h1 class="title">Why and How I trained MusicGen Songstarter</h1>
                   <div>
         <div class="description">
-          Explaining the motivation and process behind training MusicGen Songstarter, a model that generates useful song ideas for music producers.
+          Explaining the motivation and process behind training musicgen-songstarter-v0.2, a model that generates useful song ideas for music producers.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -177,8 +177,16 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 
 
 
-<p>This post will bring you through my motivations and process for training MusicGen Songstarter, a fine-tuned MusicGen model that produces useful samples for music producers.</p>
-<p>This is not a research paper. However, much like a research paper, there is a bit of a long winded background below here to give you some context. Skip to <a href="#the-plan">the plan</a> if you want to get straight to the technical details.</p>
+<p>This post will bring you through my motivations and process for training <a href="https://huggingface.co/nateraw/musicgen-songstarter-v0.2">musicgen-songstarter-v0.2</a>, a fine-tuned MusicGen model that produces useful samples for music producers.</p>
+<p>This is not a research paper. However, much like a research paper, there is a bit of a long winded background in the beginning here to give you some context. Skip to <a href="#the-plan">the plan</a> if you want to get straight to the technical details.</p>
+<p>If you find this post interesting, please consider supporting my work by:</p>
+<ul>
+<li>Giving the model a like on Hugging Face <a href="https://huggingface.co/nateraw/musicgen-songstarter-v0.2">here</a> ❤️</li>
+<li>Giving the source code of <a href="https://github.com/nateraw/singing-songstarter">singing-songstarter</a> a star ⭐</li>
+<li>Following me on <a href="https://twitter.com/_nateraw">Twitter</a> 🐦</li>
+<li>Following me on <a href="https://github.com/nateraw">GitHub</a> 🐙</li>
+<li>Sharing this post with your friends/enemies 📤</li>
+</ul>
 <section id="my-background-in-music" class="level2">
 <h2 class="anchored" data-anchor-id="my-background-in-music">My Background in Music</h2>
 <p>Before I got into programming, I used to spend my free time producing music. I spent countless hours in middle school downloading various software onto the family computer and infecting it with viruses (sorry Mom!). Nobody I knew at school was into that sort of thing, so I had to go online to find folks like me who were tinkering with music production. Once I found a few friends via [what I imagine were] Soundcloud DMs, we formed a Facebook group to chat, collaborate, share our music, and ask technical questions.</p>
@@ -198,10 +206,10 @@ gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 <p>With the excitement also came some minor frustrations…it was exciting because it was a huge step forward in the field of AI music generation - <strong>and</strong> the weights were open. Frustrating because the Encodec model used to train the larger variants of MusicGen was for <strong><strong>32khz mono</strong></strong> audio. A <strong><strong>44.1k/48k stereo</strong></strong> MusicGen would have earth shattering for the AI community. Instead, they teased us a bit by releasing a 48k stereo <code>Encodec</code>, but made it frustrating to use in their training codebase, so nobody could practically train a new MusicGen checkpoint with it (if I’m mistaken about this, please let me know and I’ll revise!). Even if you could, you’d need a bunch of compute to make it happen.</p>
 <p>After some time, Meta released “stereo” variants of the MusicGen models with a bit of a hack to interleave codebooks for left and right channels - still using the mono Encodec under the hood. I’ve heard these described as being “too stereo”, which I tend to agree with. Gripes aside, these stereo models are still INCREDIBLE and I am so grateful for their release. 🙏</p>
 </section>
-<section id="musicgen---will-it-finetune" class="level2">
-<h2 class="anchored" data-anchor-id="musicgen---will-it-finetune">MusicGen - will it finetune?</h2>
-<p>A few months after the release of MusicGen, when there were still just mono models available, I started wondering: how hard it would be to fine-tune this? Just like with any large pretrained model, you often get the best results for your use case by finetuning on your own data. I had a hunch that finetuning MusicGen on a dataset of music samples could produce some really cool results.</p>
-<p>My first idea was to fine-tune on specific artists. Basically “generate a song that sounds like &lt;artist&gt; made it”. So, I started tinkering with the <a href="https://github.com/facebookresearch/audiocraft">audiocraft</a> codebase, trying to figure out how the training code worked, how to format the data, etc. For me, the codebase is a bit hard to follow. Nested Hydra configs, a PyTorch trainer suite, <a href="https://github.com/facebookresearch/flashy"><code>flashy</code></a>, that lives in a different github repo, an experiment manager, <a href="https://github.com/facebookresearch/dora"><code>dora</code></a>, that also lives in a different repo. It’s a lot to take in!!</p>
+<section id="musicgen---will-it-fine-tune" class="level2">
+<h2 class="anchored" data-anchor-id="musicgen---will-it-fine-tune">MusicGen - will it fine-tune?</h2>
+<p>A few months after the release of MusicGen, when there were still just mono models available, I started wondering: how hard it would be to fine-tune this? Just like with any large pretrained model, you often get the best results for your use case by fine-tuning on your own data. I had a hunch that fine-tuning MusicGen on a dataset of music samples could produce some really cool results.</p>
+<p>My first idea was to fine-tune on specific artists. Basically “generate a song that sounds like &lt;artist&gt; made it”. My intuition was that for this to work, the style of the songs would have to be distinct. So, I started tinkering with the <a href="https://github.com/facebookresearch/audiocraft">audiocraft</a> codebase, trying to figure out how the training code worked, how to format the data, etc. For me, the codebase is a bit hard to follow. Nested Hydra configs, a PyTorch trainer suite, <a href="https://github.com/facebookresearch/flashy"><code>flashy</code></a>, that lives in a different github repo, an experiment manager, <a href="https://github.com/facebookresearch/dora"><code>dora</code></a>, that also lives in a different repo. It’s a lot to take in!!</p>
 <section id="initial-experiments-with-fine-tuning-on-artists" class="level4">
 <h4 class="anchored" data-anchor-id="initial-experiments-with-fine-tuning-on-artists">Initial experiments with fine-tuning on artists</h4>
 <p>After some exploration, I figured out how to get training running using their codebase, and prepared a dataset of samples from a few artists and started training for the text-to-music task, starting from the <a href="https://huggingface.co/facebook/musicgen-small">musicgen-small</a> checkpoint as that was the largest model I could fit on a Google Colab A100 40gb GPU. For the dataset, since I didn’t have text captions for the music, I set the captions to be the same every time: “an electronic instrumental in the style of <artist>”.</artist></p>
@@ -281,7 +289,7 @@ Your browser does not support the audio element. </audio>
 <blockquote class="blockquote">
 <p>As a quick aside, I think some of my issues with FSDP in <code>audiocraft</code> may have been H100 specific. There are some lingering issues on their GitHub about it. My implementation also had some issues on H100 that I am not 100% sure are resolved. Had limited time to debug because every hour spent not training was ~$30. I actually ended up burning most of the credits Lambda gave me for this project just on one 12 hour session debugging FSDP issues on an 8xH100. 😭 The final training run was done on 8xA100 40GB.</p>
 </blockquote>
-<p>The training code I used is available via my fork of the audiocraft repo <a href="https://github.com/nateraw/audiocraft">here</a>. Note I did not add the validation loop here - I found I was evaluating the model by generating samples and listening to them, so I didn’t bother with it. Again, I was doing most of this on my own time, so I was moving quickly.</p>
+<p>The training code I used is available via my fork of the audiocraft repo <a href="https://github.com/nateraw/audiocraft">here</a>. Note I did not add the validation loop here - I found I was evaluating the model by generating samples and listening to them, so I didn’t bother with it. Again, I was doing most of this on my own time, so I was moving quickly. Don’t judge me, k? 😅</p>
 </section>
 <section id="training-details" class="level4">
 <h4 class="anchored" data-anchor-id="training-details">Training details</h4>
@@ -293,11 +301,97 @@ Your browser does not support the audio element. </audio>
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<p>I don’t have any quantitative results to show here. I figured it would be unfair to eval against MusicCaps as an eval, since my model is for a more specific use case. Its prompts weren’t natural language, but instead lists of tags. Instead, I encourage you to hear what it can do!</p>
+<p>I don’t have any quantitative results to show here. I figured it would be unfair to eval against MusicCaps as an eval, since my model is for a more specific use case. Its prompts weren’t natural language, but instead lists of tags (which also applies to my comparisons below). Instead, I encourage you to hear what it can do!</p>
+<section id="prompt-melody-music" class="level4">
+<h4 class="anchored" data-anchor-id="prompt-melody-music">Prompt + Melody ➡️ Music</h4>
+<p>We fine-tuned on top of a <em>melody</em> model. The base model, <code>facebook/musicgen-stereo-melody-large</code>, was trained to both be able to generate audio that sounds like a desired text prompt as well as generate audio that matches a desired melody. When we fine-tuned on top of the model, we did so for text-to-music only. However, we get the melody conditioning for free! Here’s a couple examples showing what the model sounds like. For clarity, I’ve included outputs from the base model as well. For both, I generated 4 samples and picked the best one.</p>
+<table style="width:100%; text-align:center;">
+<tbody><tr>
+<th>
+Audio Prompt
+</th>
+<th>
+Text Prompt
+</th>
+<th>
+musicgen-songstarter-v0.2
+</th>
+<th>
+musicgen-stereo-melody-large
+</th>
+</tr>
+<tr>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/kalhonaho.wav" type="audio/wav">
+Your browser does not support the audio element. </audio>
+</td>
+<td>
+trap, synthesizer, songstarters, dark, G# minor, 140 bpm
+</td>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/kalhonaho_trap.wav" type="audio/wav">
+Your browser does not support the audio element. </audio>
+</td>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/kalhonaho_trap_base_model.mp3" type="audio/mp3">
+Your browser does not support the audio element. </audio>
+</td>
+</tr>
+<tr>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/bach.mp3" type="audio/mp3">
+Your browser does not support the audio element. </audio>
+</td>
+<td>
+acoustic, guitar, melody, trap, D minor, 90 bpm
+</td>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/bach_guitar.wav" type="audio/wav">
+Your browser does not support the audio element. </audio>
+</td>
+<td>
+<audio controls="">
+<source src="../static/training_musicgen_songstarter/bach_guitar_base_model.mp3" type="audio/mp3">
+Your browser does not support the audio element. </audio>
+</td>
+</tr>
+</tbody></table>
+</section>
+<section id="sing-an-idea-prompt-music" class="level4">
+<h4 class="anchored" data-anchor-id="sing-an-idea-prompt-music">Sing an Idea + Prompt ➡️ Music</h4>
+<p>Something I couldn’t shake after hearing the results above was: “it would be so much cooler if I could just hum the melody”.</p>
+<p>I can’t tell you how many times I’ve sat down to produce music and just stared at my DAW, not knowing where to start. I am not good enough at piano to just sit down and let ideas flow - I’m a classically trained trombone player. It would be kinda whack to see me whip out a trombone in the middle of a session 😂. Instead, I usually start by humming a melody, then trying to find the notes on the piano roll.</p>
+<blockquote class="blockquote">
+<p>💡 <strong><strong>Fun fact</strong></strong> - did you know that Michael Jackson used to sing his melodies into a tape recorder for his producers? Here’s his <a href="https://www.youtube.com/watch?v=eZeYw1bm53Y">demo tape for Beat It</a>. Imagine if Michael could have produced his own tracks using just his voice! 🤯</p>
+</blockquote>
+<p>I struggled with this for a bit until I realized I was just being stupid - the solution was right in front of me. Under the hood, when MusicGen does melody conditioning, it runs stem separation on the audio prompt to remove vocals, as they can make it harder to find a stable signal for conditioning. By simply removing this step, we can prompt with vocals directly! 🔥</p>
+<p>Have a listen to the results:</p>
+<video width="850" height="450" controls="">
+<source src="../static/training_musicgen_songstarter/singing_songstarter_v2.mp4" type="video/mp4">
+<p>Your browser does not support the video tag. </p>
+<p>Now, unless you’ve got a voice like Michael’s, you likely don’t sing with perfect pitch. We reintroduce the problem that stem separation tried to solve. If your vocals are off pitch, or have fast vibrato, the model will have a hard time finding a stable signal to condition against. To try and mitigate that, you can run pitch correction on your vocals before feeding them through to the patched model. I used some modified code from this AWESOME <a href="https://t.co/Kpi023sDP6">blogpost</a> by <a href="https://twitter.com/wilczek_jan"><span class="citation" data-cites="wilczek_jan">@wilczek_jan</span></a> to do this, and packaged it up into a Gradio app to play with interactively.</p>
+<p>You can find the code <a href="https://github.com/nateraw/singing-songstarter">here</a>, or play with it <a href="https://huggingface.co/spaces/nateraw/singing-songstarter">on Hugging Face Spaces</a>. I’ll embed it below for your convenience:</p>
+<iframe src="https://nateraw-singing-songstarter.hf.space" frameborder="0" width="850" height="450">
+</iframe>
+</video></section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>I’m really excited about the future of AI Music for music producers. I hope to keep working in this space and provide music producers tools that they can use to elevate their creativity - NOT replace them. After all, what I’m trying to create here is something I would want to use myself.</p>
+<p>If you found this post interesting, please consider supporting me by:</p>
+<ul>
+<li>Giving the model a like on Hugging Face <a href="https://huggingface.co/nateraw/musicgen-songstarter-v0.2">here</a> ❤️</li>
+<li>Giving the source code of <a href="https://github.com/nateraw/singing-songstarter">singing-songstarter</a> a star ⭐</li>
+<li>Following me on <a href="https://twitter.com/_nateraw">Twitter</a> 🐦</li>
+<li>Following me on <a href="https://github.com/nateraw">GitHub</a> 🐙</li>
+<li>Sharing this post with your friends/enemies 📤</li>
+</ul>
+<p>Thanks for reading! 🎶</p>
 
 
 </section>

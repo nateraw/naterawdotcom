@@ -5,8 +5,8 @@ title-block-banner: false
 listing:
   sort: "date desc"
   contents: posts
-  exclude:
-    title: "Why and*"
+#  exclude:
+#    title: "Why and*"
 ---
 
 Hi, I'm Nate Raw. 👋

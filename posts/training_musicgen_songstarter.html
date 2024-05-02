@@ -298,6 +298,12 @@ Your browser does not support the audio element. </audio>
 <p>v0.2 was fine-tuned on top of <a href="https://huggingface.co/facebook/musicgen-stereo-melody-large"><code>facebook/musicgen-stereo-melody-large</code></a> on a Lambda Labs 8xA100 40gb instance for 10k steps, which took about 6 hours. With FSDP, I could safely fit a batch size of 5 per device, so that’s what I used (meaning global batch size of 40). I reduced the minimum segment duration to 15s (from the base model’s 30s). The code is available <a href="https://github.com/nateraw/audiocraft">here</a>, but is undocumented as of now.</p>
 <p>I tried a few different combos of batch size / segment duration to find what made sense for me. In the end, even though we trained on smaller samples, the model can still generate longer samples - at the cost (or benefit, depending who you ask) of the fact they are usually looping.</p>
 </section>
+<section id="training-metrics" class="level4">
+<h4 class="anchored" data-anchor-id="training-metrics">Training Metrics</h4>
+<p>You can find the training metrics on WandB. Here’s a link to the <a href="https://wandb.ai/nateraw/musicgen-songstarter-v0.2/runs/63gh4l7m?nw=nwusernateraw">run</a> with all the metrics and hyperparameters. Metrics themselves aren’t too useful, but figured I’d make them available.</p>
+<iframe src="https://wandb.ai/nateraw/musicgen-songstarter-v0.2/reports/musicgen-songstarter-v0-2--Vmlldzo3Njg3OTE2" style="border:none;height:1024px;width:100%">
+</iframe>
+</section>
 </section>
 </section>
 <section id="results" class="level2">

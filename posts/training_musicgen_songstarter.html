@@ -79,6 +79,7 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-QQ37HV1W85', { 'anonymize_ip': true});
 </script>
+<script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/4.27.0/gradio.js"></script>
 
 
 <meta name="twitter:title" content="nateraw.com - Why and How I trained MusicGen Songstarter">
@@ -370,15 +371,17 @@ Your browser does not support the audio element. </audio>
 <p>💡 <strong><strong>Fun fact</strong></strong> - did you know that Michael Jackson used to sing his melodies into a tape recorder for his producers? Here’s his <a href="https://www.youtube.com/watch?v=eZeYw1bm53Y">demo tape for Beat It</a>. Imagine if Michael could have produced his own tracks using just his voice! 🤯</p>
 </blockquote>
 <p>I struggled with this for a bit until I realized I was just being stupid - the solution was right in front of me. Under the hood, when MusicGen does melody conditioning, it runs stem separation on the audio prompt to remove vocals, as they can make it harder to find a stable signal for conditioning. By simply removing this step, we can prompt with vocals directly! 🔥</p>
+<p>Now, unless you’ve got a voice like Michael’s, you likely don’t sing with perfect pitch. We reintroduce the problem that stem separation tried to solve. If your vocals are off pitch, or have fast vibrato, the model will have a hard time finding a stable signal to condition against. To try and mitigate that, you can run pitch correction on your vocals before feeding them through to the patched model. I used some modified code from this AWESOME <a href="https://t.co/Kpi023sDP6">blogpost</a> by <a href="https://twitter.com/wilczek_jan"><span class="citation" data-cites="wilczek_jan">@wilczek_jan</span></a> to do this, and packaged it up into a Gradio app to play with interactively.</p>
 <p>Have a listen to the results:</p>
 <video width="850" height="450" controls="">
 <source src="../static/training_musicgen_songstarter/singing_songstarter_v2.mp4" type="video/mp4">
-<p>Your browser does not support the video tag. </p>
-<p>Now, unless you’ve got a voice like Michael’s, you likely don’t sing with perfect pitch. We reintroduce the problem that stem separation tried to solve. If your vocals are off pitch, or have fast vibrato, the model will have a hard time finding a stable signal to condition against. To try and mitigate that, you can run pitch correction on your vocals before feeding them through to the patched model. I used some modified code from this AWESOME <a href="https://t.co/Kpi023sDP6">blogpost</a> by <a href="https://twitter.com/wilczek_jan"><span class="citation" data-cites="wilczek_jan">@wilczek_jan</span></a> to do this, and packaged it up into a Gradio app to play with interactively.</p>
+Your browser does not support the video tag.
+
+</video>
+<hr>
 <p>You can find the code <a href="https://github.com/nateraw/singing-songstarter">here</a>, or play with it <a href="https://huggingface.co/spaces/nateraw/singing-songstarter">on Hugging Face Spaces</a>. I’ll embed it below for your convenience:</p>
-<iframe src="https://nateraw-singing-songstarter.hf.space" frameborder="0" width="850" height="450">
-</iframe>
-</video></section>
+<p><gradio-app src="https://nateraw-singing-songstarter.hf.space"></gradio-app></p>
+</section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>

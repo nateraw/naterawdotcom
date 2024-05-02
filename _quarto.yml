@@ -31,3 +31,7 @@ execute:
 resources:
   - CNAME
   - static/training_musicgen_songstarter/*.wav
+  - static/training_musicgen_songstarter/bach.mp3
+  - static/training_musicgen_songstarter/kalhonaho_trap_base_model.mp3
+  - static/training_musicgen_songstarter/bach_guitar_base_model.mp3
+  - static/training_musicgen_songstarter/singing_songstarter_v2.mp4

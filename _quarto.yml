@@ -18,7 +18,7 @@ website:
 
   cookie-consent:
     type: express
-    style: headline
+    style: simple
     palette: dark
   # If you fork this, use a different google analytics id or remove this line
   google-analytics:

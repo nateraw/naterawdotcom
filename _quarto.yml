@@ -16,8 +16,14 @@ website:
       - icon: linkedin
         href: https://www.linkedin.com/in/Nathan-Raw/
 
+  cookie-consent:
+    type: express
+    style: headline
+    palette: dark
   # If you fork this, use a different google analytics id or remove this line
-  google-analytics: G-JZN5RBFRD7
+  google-analytics:
+    tracking-id: G-JZN5RBFRD7
+    anonymize-ip: true
 
 ipynb-filters:
   - filter.py

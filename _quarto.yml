@@ -16,11 +16,14 @@ website:
       - icon: linkedin
         href: https://www.linkedin.com/in/Nathan-Raw/
 
-  cookie-consent:
-    type: express
-    style: simple
-    palette: dark
+  # TODO - re-enable but make it less intrusive
+  # cookie-consent:
+  #   type: express
+  #   style: simple
+  #   palette: dark
+  #   prefs-text: "some message here"
   # If you fork this, use a different google analytics id or remove this line
+
   google-analytics:
     tracking-id: G-JZN5RBFRD7
     anonymize-ip: true

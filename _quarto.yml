@@ -15,7 +15,9 @@ website:
         href: https://twitter.com/_nateraw
       - icon: linkedin
         href: https://www.linkedin.com/in/Nathan-Raw/
-  google-analytics: G-QQ37HV1W85
+
+  # If you fork this, use a different google analytics id or remove this line
+  google-analytics: G-JZN5RBFRD7
 
 ipynb-filters:
   - filter.py

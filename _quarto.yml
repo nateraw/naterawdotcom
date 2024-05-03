@@ -16,6 +16,8 @@ website:
       - icon: linkedin
         href: https://www.linkedin.com/in/Nathan-Raw/
 
+  repo-url: https://github.com/nateraw/naterawdotcom
+  repo-actions: [edit, issue]
   # TODO - re-enable but make it less intrusive
   # cookie-consent:
   #   type: express
